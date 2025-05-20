@@ -2,6 +2,13 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { signUp } from "../../../lib/auth";
+import { useMutation } from "@tanstack/react-query";
+import { User } from "firebase/auth";
+
+type SignupData = {
+  email: string;
+  password: string;
+};
 
 export default function SignupForm() {
   const router = useRouter();
@@ -19,6 +26,23 @@ export default function SignupForm() {
     });
   };
 
+  const signupMutation = useMutation<User, Error, SignupData>({
+    mutationFn: ({ email, password }: SignupData) => signUp(email, password), // 파라미터 사용
+    onSuccess: () => {
+      router.push("/");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      console.log("회원가입을 성공하였습니다");
+    },
+    onError: (error) => {
+      console.error("에러가 발생하였습니다.", error);
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -26,14 +50,9 @@ export default function SignupForm() {
       alert("비밀번호가 일치하지 않습니다!");
       return;
     }
-    console.log("회원가입 시도:", formData);
-    signUp(formData.email, formData.password);
-
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+    signupMutation.mutate({
+      email: formData.email,
+      password: formData.password,
     });
   };
 

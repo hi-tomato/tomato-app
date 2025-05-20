@@ -1,36 +1,48 @@
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  // signInWithEmailAndPassword,
+  User,
 } from "firebase/auth";
 import { auth } from "./firebase";
 
 // type User = { email: string; password: string };
 
 // SignUp
-export const signUp = async (email: string, password: string) => {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("유저가 성공적으로 회원가입을 하였습니다.", user);
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("회원가입을 실패하였습니다. :" + errorMessage, errorCode);
-    });
+export const signUp = async (
+  email: string,
+  password: string
+): Promise<User> => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    console.log("유저가 성공적으로 회원가입을 하였습니다.", user);
+    return user; // User 객체 반환
+  } catch (error) {
+    const errorCode = (error as any).code;
+    const errorMessage = (error as any).message;
+    console.error("회원가입을 실패하였습니다. :" + errorMessage, errorCode);
+    throw error;
+  }
 };
 
 // Login
-export const signLogin = async (email: string, password: string) => {
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("로그인을 성공하였습니다! ", user);
-      return user;
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(`로그인을 실패하였습니다: ${errorMessage} ${errorCode}`);
-    });
+export const signLogin = async (
+  email: string,
+  password: string
+): Promise<User> => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    return user; // User 객체 반환
+  } catch (error) {
+    throw error;
+  }
 };
