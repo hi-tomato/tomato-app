@@ -5,3 +5,7 @@ body {
   font-family: "Pretendard Variable", -apple-system, BlinkMacSystemFont,
     sans-serif;
 }
+
+button {
+  cursor: pointer;
+}

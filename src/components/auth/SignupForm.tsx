@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { signUp } from "../../../lib/auth";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -16,13 +17,6 @@ export default function SignupForm() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,8 +26,15 @@ export default function SignupForm() {
       alert("비밀번호가 일치하지 않습니다!");
       return;
     }
-
     console.log("회원가입 시도:", formData);
+    signUp(formData.email, formData.password);
+
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
 
   return (

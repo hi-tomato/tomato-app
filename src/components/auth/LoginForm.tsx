@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { signLogin } from "../../../lib/auth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState<string>("");
@@ -9,8 +10,14 @@ export default function LoginForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Firebase 로그인 로직 추가 예정
+
+    if (email.trim().length === 0 && password.trim().length === 0) {
+      return null;
+    }
+
     console.log("로그인 시도:", { email, password });
+    signLogin(email, password);
+
     setEmail("");
     setPassword("");
   };
@@ -23,7 +30,7 @@ export default function LoginForm() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             멋쟁이 토마토
           </h1>
-          <p className="text-gray-500">토마토들의 소통 공간</p>
+          <p className="text-gray-500">멋쟁이 토마토들의 소통 공간이에요!</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
