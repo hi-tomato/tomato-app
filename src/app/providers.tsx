@@ -1,11 +1,44 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { ReactNode } from "react";
+import { useSetAtom } from "jotai";
+import React, { useEffect } from "react";
+import { userAtom } from "../../atoms/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { Provider } from "jotai";
 
 const queryClient = new QueryClient();
 
-export default function Providers({ children }: { children: ReactNode }) {
+function AuthStateProvider({ children }: { children: React.ReactNode }) {
+  const setUser = useSetAtom(userAtom);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const result = {
+          uid: user.uid,
+          email: user.email!,
+          displayName: user.displayName || undefined,
+        };
+        setUser(result);
+        console.log("현재 로그인한 상태:", result);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return unsubscribe;
+  }, [setUser]);
+
+  return <>{children}</>;
+}
+
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <Provider>
+      <QueryClientProvider client={queryClient}>
+        <AuthStateProvider>{children}</AuthStateProvider>
+      </QueryClientProvider>
+    </Provider>
   );
 }

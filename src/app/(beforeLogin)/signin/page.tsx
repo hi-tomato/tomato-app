@@ -1,21 +1,21 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { signLogin } from "../../../lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "firebase/auth";
+import { signLogin } from "../../../../lib/auth";
 
-type SignUpData = {
+type SignInPageData = {
   email: string;
   password: string;
 };
 
-export default function LoginForm() {
+export default function SignInPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const router = useRouter();
 
-  const signUpMutation = useMutation<User, Error, SignUpData>({
+  const signUpMutation = useMutation<User, Error, SignInPageData>({
     mutationFn: ({ email, password }) => signLogin(email, password),
     onSuccess: () => {
       router.push("/feed");

@@ -1,0 +1,17 @@
+// atoms/auth.ts
+import { atom } from "jotai";
+
+export interface User {
+  uid: string;
+  email: string;
+  displayName?: string;
+}
+
+export const userAtom = atom<User | null | undefined>(undefined);
+
+export const isLoggedInAtom = atom((get) => {
+  const user = get(userAtom);
+  return user !== null && user !== undefined;
+});
+
+export const isLoadingAtom = atom((get) => get(userAtom) === undefined);
