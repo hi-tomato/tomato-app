@@ -2,18 +2,21 @@
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { isLoadingAtom, isLoggedInAtom } from "../../../atoms/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
   const [isLoading] = useAtom(isLoadingAtom);
   const router = useRouter();
+  const pathname = usePathname();
 
+  const publicRoutes = ["/signin", "signup"];
+  const isPublicRoute = publicRoutes.includes(pathname);
   useEffect(() => {
-    if (!isLoggedIn && !isLoading) {
-      router.push("/login");
+    if (!isLoggedIn && !isLoading && !isPublicRoute) {
+      router.push("/signin");
     }
-  }, [isLoggedIn, router, isLoading]);
+  }, [isLoggedIn, router, isLoading, isPublicRoute]);
 
   // 아직 로딩 중이면 로딩 표시
   if (isLoading) {

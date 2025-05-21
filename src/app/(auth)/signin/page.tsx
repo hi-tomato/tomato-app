@@ -18,7 +18,7 @@ export default function SignInPage() {
   const signUpMutation = useMutation<User, Error, SignInPageData>({
     mutationFn: ({ email, password }) => signLogin(email, password),
     onSuccess: () => {
-      router.push("/feed");
+      router.push("/");
       setEmail("");
       setPassword("");
       console.log("유저가 로그인을 성공하였습니다!");
