@@ -48,7 +48,6 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* 네비게이션 */}
           <nav className="flex items-center gap-6">
             {isLoggedIn ? (
               <>
@@ -64,6 +63,14 @@ export default function Header() {
                       {user?.displayName || user?.email?.split("@")[0]}
                     </span>
                   </div>
+
+                  {/* 글쓰기 버튼 */}
+                  <Link
+                    href="/create"
+                    className="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-md flex items-center gap-2 backdrop-blur-sm border border-white/20"
+                  >
+                    <span className="sm:inline">피드 작성하기</span>
+                  </Link>
 
                   <button
                     onClick={handleLogout}

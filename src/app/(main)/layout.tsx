@@ -5,15 +5,19 @@ import React from "react";
 
 export default function MainLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <AuthGuard>
       <div>
         <Header />
         <main>{children}</main>
+
         <Navigation />
+        {modal}
       </div>
     </AuthGuard>
   );

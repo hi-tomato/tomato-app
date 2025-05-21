@@ -1,5 +1,5 @@
 import { Post } from "@/types/feed";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import mockData from "@/mock/mockPost.json";
 
 const fetchPosts = async (): Promise<Post[]> => {
@@ -22,4 +22,25 @@ export const usePost = () => {
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
+};
+
+export const useToggleLike = () => {
+  const queryClient = useQueryClient();
+
+  const toggleLike = (postId: number) => {
+    queryClient.setQueryData<Post[]>(["posts"], (old) => {
+      if (!old) return old;
+      return old.map((post) => {
+        if (post.id !== postId) return post;
+        const newIsLiked = !post.isLiked;
+        return {
+          ...post,
+          isLiked: newIsLiked,
+          likeCount: post.likeCount + (newIsLiked ? 1 : -1),
+        };
+      });
+    });
+  };
+
+  return toggleLike;
 };

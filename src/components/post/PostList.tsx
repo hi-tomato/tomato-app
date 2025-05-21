@@ -1,13 +1,12 @@
-import { Post } from "@/types/feed";
+"use client";
+import { usePost, useToggleLike } from "@/hooks/useMockPost";
 import React from "react";
+import { BiHeart, BiMessage } from "react-icons/bi";
 
-export default function PostList({
-  posts,
-  isLoading,
-}: {
-  posts: Post[];
-  isLoading: boolean;
-}) {
+export default function PostList() {
+  const { data: posts = [], isLoading } = usePost();
+
+  const toggleLike = useToggleLike();
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -53,12 +52,15 @@ export default function PostList({
 
           {/* 액션 */}
           <div className="flex items-center gap-6 pt-3 border-t border-gray-100">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-red-500">
-              <span>❤️</span>
+            <button
+              onClick={() => toggleLike(post.id)}
+              className="flex items-center gap-2 text-gray-600 hover:text-red-500"
+            >
+              <BiHeart />
               <span className="text-sm">{post.likeCount}</span>
             </button>
             <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500">
-              <span>💬</span>
+              <BiMessage />
               <span className="text-sm">{post.comments.length}</span>
             </button>
           </div>
