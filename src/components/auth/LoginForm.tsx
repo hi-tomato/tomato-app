@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { signLogin } from "../../../lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "firebase/auth";
+import { signLogin } from "@/lib/auth";
 
 type SignUpData = {
   email: string;

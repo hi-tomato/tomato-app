@@ -1,8 +1,8 @@
 "use client";
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
-import { isLoadingAtom, isLoggedInAtom } from "../../../atoms/auth";
 import { usePathname, useRouter } from "next/navigation";
+import { isLoadingAtom, isLoggedInAtom } from "@/atoms/auth";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isLoggedIn] = useAtom(isLoggedInAtom);

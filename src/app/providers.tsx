@@ -2,10 +2,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import React, { useEffect } from "react";
-import { userAtom } from "../../atoms/auth";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../lib/firebase";
 import { Provider } from "jotai";
+import { userAtom } from "@/atoms/auth";
+import { auth } from "@/lib/firebase";
 
 const queryClient = new QueryClient();
 

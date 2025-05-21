@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "firebase/auth";
-import { signUp } from "../../../../lib/auth";
+import { signUp } from "@/lib/auth";
 
 type SignupData = {
   email: string;

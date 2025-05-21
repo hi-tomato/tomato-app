@@ -1,11 +1,10 @@
 "use client";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { isLoggedInAtom, userAtom } from "../../../atoms/auth";
 import { signOut } from "firebase/auth";
-import { auth } from "../../../lib/firebase";
+import { isLoggedInAtom, userAtom } from "@/atoms/auth";
+import { auth } from "@/lib/firebase";
 
 export default function Header() {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
@@ -26,7 +25,7 @@ export default function Header() {
     <header
       className="sticky top-0 z-50 shadow-lg backdrop-blur-sm"
       style={{
-        background: "-webkit-linear-gradient(to right, #e35d5b, #e53935)",
+        background: "linear-gradient(to right, #e35d5b, #e53935)",
       }}
     >
       <div className="max-w-6xl mx-auto px-6 py-4">
