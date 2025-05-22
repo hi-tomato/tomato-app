@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isLoadingAtom, isLoggedInAtom } from "@/atoms/auth";
+import { getAccessToken } from "@/lib/authToken";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
@@ -12,13 +13,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   const publicRoutes = ["/signin", "signup"];
   const isPublicRoute = publicRoutes.includes(pathname);
+
   useEffect(() => {
+    const token = getAccessToken();
+
+    if (!isPublicRoute && !token) {
+      router.push("/signin");
+      return;
+    }
+    if (!isLoggedIn && !isLoading && !isPublicRoute && token) {
+      // 토큰은 있지만 유저 정보가 없는 경우 로딩 대기
+      return;
+    }
     if (!isLoggedIn && !isLoading && !isPublicRoute) {
       router.push("/signin");
     }
   }, [isLoggedIn, router, isLoading, isPublicRoute]);
 
-  // 아직 로딩 중이면 로딩 표시
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -30,8 +41,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // 로그인이 안되어 있으면 아무것도 렌더링 안함 (리다이렉트 대기)
-  if (!isLoggedIn) {
+  if (!isPublicRoute && !isLoggedIn && !isLoading) {
     return null;
   }
 

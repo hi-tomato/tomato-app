@@ -2,9 +2,9 @@
 import { atom } from "jotai";
 
 export interface User {
-  uid: string;
+  id: string;
   email: string;
-  displayName?: string;
+  name: string;
 }
 
 export const userAtom = atom<User | null | undefined>(undefined);

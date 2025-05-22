@@ -1,14 +1,12 @@
 "use client";
+import { useSignUp } from "@/hooks/useAuth";
+import {
+  validateConfirmPassword,
+  validateEmail,
+  validatePassword,
+} from "@/utils/validation";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { User } from "firebase/auth";
-import { signUp } from "@/lib/auth";
-
-type SignupData = {
-  email: string;
-  password: string;
-};
 
 export default function SignUp() {
   const router = useRouter();
@@ -19,6 +17,8 @@ export default function SignUp() {
     confirmPassword: "",
   });
 
+  const signupMutation = useSignUp();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -26,31 +26,20 @@ export default function SignUp() {
     });
   };
 
-  const signupMutation = useMutation<User, Error, SignupData>({
-    mutationFn: ({ email, password }: SignupData) => signUp(email, password), // Using parameters
-    onSuccess: () => {
-      router.push("/");
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      console.log("회원가입을 성공하였습니다");
-    },
-    onError: (error) => {
-      console.error("에러가 발생하였습니다.", error);
-    },
-  });
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const emailCheck = validateEmail(formData.email);
+    const passwordCheck = validatePassword(formData.password);
+    const passwordConFirmCheck = validateConfirmPassword(
+      formData.password,
+      formData.confirmPassword
+    );
+    if (!emailCheck.isValid) return;
+    if (!passwordCheck.isValid) return;
+    if (!passwordConFirmCheck.isValid) return;
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다!");
-      return;
-    }
     signupMutation.mutate({
+      name: formData.name,
       email: formData.email,
       password: formData.password,
     });

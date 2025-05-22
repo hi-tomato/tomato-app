@@ -1,40 +1,20 @@
 "use client";
+import { useSignIn } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { User } from "firebase/auth";
-import { signLogin } from "@/lib/auth";
-
-type SignInPageData = {
-  email: string;
-  password: string;
-};
 
 export default function SignInPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const router = useRouter();
-
-  const signUpMutation = useMutation<User, Error, SignInPageData>({
-    mutationFn: ({ email, password }) => signLogin(email, password),
-    onSuccess: () => {
-      router.push("/");
-      setEmail("");
-      setPassword("");
-      console.log("유저가 로그인을 성공하였습니다!");
-    },
-    onError: (error) => {
-      console.error(`유저가 로그인을 하던 중, 오류가 발생하였습니다. ${error}`);
-    },
-  });
+  const loginMutation = useSignIn();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (email.trim().length === 0 && password.trim().length === 0) {
       return null;
     }
-
-    signUpMutation.mutate({ email, password });
+    loginMutation.mutate({ email, password });
   };
 
   return (

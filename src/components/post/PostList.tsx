@@ -1,12 +1,26 @@
 "use client";
 import { usePost, useToggleLike } from "@/hooks/useMockPost";
-import React from "react";
+import React, { useState } from "react";
 import { BiHeart, BiMessage } from "react-icons/bi";
+import CommentList from "../comment/CommentList";
+import CommentForm from "../comment/CommentForm";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/auth";
 
 export default function PostList() {
   const { data: posts = [], isLoading } = usePost();
-
   const toggleLike = useToggleLike();
+  const [openComment, setOpenComment] = useState<number | null>(null);
+  const [user] = useAtom(userAtom);
+
+  const handleCommentSubmit = (postId: number, content: string) => {
+    console.log("댓글 작성:", { postId, content });
+  };
+
+  const handleCommentDelete = (postId: number) => {
+    console.log("삭제될 댓글:", postId);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -59,11 +73,31 @@ export default function PostList() {
               <BiHeart />
               <span className="text-sm">{post.likeCount}</span>
             </button>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500">
+            <button
+              onClick={() =>
+                setOpenComment(openComment === post.id ? null : post.id)
+              }
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-500"
+            >
               <BiMessage />
               <span className="text-sm">{post.comments.length}</span>
             </button>
           </div>
+
+          {openComment === post.id && (
+            <>
+              <CommentList
+                comments={post.comments}
+                isVisible={true}
+                onDelete={handleCommentDelete}
+              />
+              <CommentForm
+                postId={post.id}
+                currentUser={user?.displayName || user?.email?.split("@")[0]}
+                onSubmit={handleCommentSubmit}
+              />
+            </>
+          )}
         </div>
       ))}
     </div>

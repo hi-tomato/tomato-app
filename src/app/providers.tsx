@@ -1,35 +1,19 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useSetAtom } from "jotai";
 import React, { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
 import { Provider } from "jotai";
-import { userAtom } from "@/atoms/auth";
-import { auth } from "@/lib/firebase";
+import { getAccessToken } from "@/lib/authToken";
+import { useGetUser } from "@/hooks/useAuth";
 
 const queryClient = new QueryClient();
 
 function AuthStateProvider({ children }: { children: React.ReactNode }) {
-  const setUser = useSetAtom(userAtom);
-
+  const { refetch } = useGetUser();
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const result = {
-          uid: user.uid,
-          email: user.email!,
-          displayName: user.displayName || undefined,
-        };
-        setUser(result);
-        console.log("현재 로그인한 상태:", result);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return unsubscribe;
-  }, [setUser]);
-
+    if (getAccessToken()) {
+      refetch();
+    }
+  }, [refetch]);
   return <>{children}</>;
 }
 

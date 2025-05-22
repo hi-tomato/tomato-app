@@ -4,6 +4,10 @@ export interface SignUpRequest {
   password: string;
 }
 
+export interface SigninResponse {
+  accessToken: string;
+}
+
 export interface SigninRequest {
   email: string;
   password: string;

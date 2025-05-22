@@ -1,24 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { signOut } from "firebase/auth";
 import { isLoggedInAtom, userAtom } from "@/atoms/auth";
-import { auth } from "@/lib/firebase";
+import { useLogout } from "@/hooks/useAuth";
 
 export default function Header() {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
   const [user] = useAtom(userAtom);
-  const router = useRouter();
-
+  const logout = useLogout();
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push("/signin");
-      console.log("로그아웃 성공");
-    } catch (error) {
-      console.error("로그아웃 오류:", error);
-    }
+    logout();
   };
 
   return (
@@ -56,17 +47,17 @@ export default function Header() {
                   <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
                       <span className="text-red-600 font-bold text-sm">
-                        {user?.displayName?.[0] || user?.email?.[0] || "🍅"}
+                        {user?.name?.[0] || user?.email?.[0] || "🍅"}
                       </span>
                     </div>
                     <span className="text-white font-semibold text-sm drop-shadow">
-                      {user?.displayName || user?.email?.split("@")[0]}
+                      {user?.name || user?.email?.split("@")[0]}
                     </span>
                   </div>
 
                   {/* 글쓰기 버튼 */}
                   <Link
-                    href="/create"
+                    href="/write"
                     className="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-md flex items-center gap-2 backdrop-blur-sm border border-white/20"
                   >
                     <span className="sm:inline">피드 작성하기</span>
