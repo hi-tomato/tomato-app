@@ -15,7 +15,6 @@ export default function MainLayout({
       <div>
         <Header />
         <main>{children}</main>
-
         <Navigation />
         {modal}
       </div>

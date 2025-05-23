@@ -1,40 +1,30 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { User } from "firebase/auth";
-import { signLogin } from "@/lib/auth";
+import React from "react";
+import { useSignIn } from "@/hooks/useAuth";
+import { useForm } from "react-hook-form";
 
-type SignUpData = {
+type LoginFormData = {
   email: string;
   password: string;
 };
 
 export default function LoginForm() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const router = useRouter();
-
-  const signUpMutation = useMutation<User, Error, SignUpData>({
-    mutationFn: ({ email, password }) => signLogin(email, password),
-    onSuccess: () => {
-      router.push("/feed");
-      setEmail("");
-      setPassword("");
-      console.log("유저가 로그인을 성공하였습니다!");
-    },
-    onError: (error) => {
-      console.error(`유저가 로그인을 하던 중, 오류가 발생하였습니다. ${error}`);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
     },
   });
+  const router = useRouter();
+  const loginMutation = useSignIn();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (email.trim().length === 0 && password.trim().length === 0) {
-      return null;
-    }
-
-    signUpMutation.mutate({ email, password });
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data);
   };
 
   return (
@@ -49,7 +39,7 @@ export default function LoginForm() {
           <p className="text-gray-500">멋쟁이 토마토들의 소통 공간이에요!</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label
               htmlFor="text"
@@ -60,12 +50,23 @@ export default function LoginForm() {
             <input
               type="text"
               id="text"
+              {...register("email", {
+                required: "이메일을 입력해주세요.",
+                pattern: {
+                  value:
+                    /^[a-z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message:
+                    "첫 글자는 소문자로 시작하고 @를 포함한 올바른 이메일 형식을 입력해주세요.",
+                },
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일을 입력해주세요."
-              required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -78,12 +79,27 @@ export default function LoginForm() {
             <input
               type="password"
               id="password"
+              {...register("password", {
+                required: "비밀번호를 입력해주세요.",
+                minLength: {
+                  value: 8,
+                  message: "비밀번호는 최소 8자 이상이어야 합니다.",
+                },
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message:
+                    "대문자, 소문자, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.",
+                },
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호를 입력하세요"
-              required
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <button

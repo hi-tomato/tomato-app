@@ -1,58 +1,40 @@
 "use client";
+import { useSignUp } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { User } from "firebase/auth";
-import { signUp } from "@/lib/auth";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-type SignupData = {
+type SignUpFormData = {
+  name: string;
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
 export default function SignupForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const signupMutation = useMutation<User, Error, SignupData>({
-    mutationFn: ({ email, password }: SignupData) => signUp(email, password), // Using parameters
-    onSuccess: () => {
-      router.push("/");
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      console.log("회원가입을 성공하였습니다");
-    },
-    onError: (error) => {
-      console.error("에러가 발생하였습니다.", error);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const signupMutation = useSignUp();
+  const password = watch("password");
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다!");
-      return;
-    }
+  const onSubmit = (data: SignUpFormData) => {
     signupMutation.mutate({
-      email: formData.email,
-      password: formData.password,
+      name: data.name,
+      email: data.email,
+      password: data.password,
     });
   };
 
@@ -70,8 +52,7 @@ export default function SignupForm() {
           </p>
         </div>
 
-        {/* 폼 -> 이메일, 비밀번호 X 4 */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label
               htmlFor="name"
@@ -82,13 +63,19 @@ export default function SignupForm() {
             <input
               type="text"
               id="name"
-              name="name"
+              {...register("name", {
+                required: "이름을 입력해주세요.",
+                minLength: {
+                  value: 2,
+                  message: "이름은 2자 이상 입력해주세요.",
+                },
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={formData.name}
-              onChange={handleChange}
               placeholder="이름을 입력하세요"
-              required
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
@@ -99,15 +86,24 @@ export default function SignupForm() {
               이메일
             </label>
             <input
-              type="email"
               id="email"
-              name="email"
+              {...register("email", {
+                required: "이메일을 입력해주세요.",
+                pattern: {
+                  value:
+                    /^[a-z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message:
+                    "첫 글자는 소문자로 시작하고 @를 포함한 올바른 이메일 형식을 입력해주세요.",
+                },
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={formData.email}
-              onChange={handleChange}
               placeholder="이메일을 입력하세요"
-              required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -120,13 +116,23 @@ export default function SignupForm() {
             <input
               type="password"
               id="password"
-              name="password"
+              {...register("password", {
+                required: "비밀번호를 입력해주세요.",
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message:
+                    "대문자, 소문자, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.",
+                },
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={formData.password}
-              onChange={handleChange}
               placeholder="비밀번호를 입력하세요"
-              required
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -139,20 +145,27 @@ export default function SignupForm() {
             <input
               type="password"
               id="confirmPassword"
-              name="confirmPassword"
+              {...register("confirmPassword", {
+                required: "비밀번호 확인을 입력해주세요.",
+                validate: (value) =>
+                  value === password || "비밀번호가 일치하지 않습니다.",
+              })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
-              value={formData.confirmPassword}
-              onChange={handleChange}
               placeholder="비밀번호를 다시 입력하세요"
-              required
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 mt-6"
+            disabled={signupMutation.isPending}
+            className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 mt-6"
           >
-            가입하기
+            {signupMutation.isPending ? "가입 중..." : "가입하기"}
           </button>
         </form>
 
@@ -162,7 +175,7 @@ export default function SignupForm() {
             이미 계정이 있으신가요?{" "}
             <span
               className="text-red-500 hover:text-red-600 cursor-pointer font-medium"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/signin")}
             >
               로그인
             </span>
