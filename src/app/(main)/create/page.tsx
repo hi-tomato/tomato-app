@@ -1,18 +1,16 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCreatePost } from "@/hooks/usePost";
 
 export default function CreatePage() {
   const [content, setContent] = useState("");
   const router = useRouter();
+  const mutation = useCreatePost();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 게시물 작성 로직
-    console.log({
-      content,
-    });
-    router.push("/");
+    mutation.mutate({ content });
   };
 
   return (
@@ -31,7 +29,6 @@ export default function CreatePage() {
           </div>
         </div>
 
-        {/* 폼 */}
         <div className="bg-white rounded-2xl p-8 shadow-lg border border-red-100">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

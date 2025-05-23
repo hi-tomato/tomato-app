@@ -1,11 +1,16 @@
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
 export interface Post {
   id: number;
   createdAt: Date;
   updatedAt: Date;
   content: string;
-  writer: string;
   likeCount: number;
   isLiked: boolean;
+  user: User;
   comments: Comment[];
 }
 

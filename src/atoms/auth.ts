@@ -1,4 +1,3 @@
-// atoms/auth.ts
 import { atom } from "jotai";
 
 export interface User {

@@ -63,6 +63,7 @@ export const useSignIn = () => {
 
 export const useGetUser = () => {
   const setUser = useSetAtom(userAtom);
+
   const userQuery = {
     queryKey: ["user"] as const,
     queryFn: getUser,
