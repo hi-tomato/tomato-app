@@ -35,7 +35,7 @@ export const useUpdatePost = () => {
     mutationFn: ({ content, id }: { content: string; id: number }) =>
       patchPost(content, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       console.log("업데이트를 완료하였습니다.");
     },
     onError: (error) => {
