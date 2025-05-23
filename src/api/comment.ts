@@ -22,12 +22,12 @@ export const createComment = async (id: number, content: string) => {
 };
 
 export const deleteComment = async (id: number) => {
-  const response = await commentAPI.delete(`/comment/${id}`);
+  const response = await commentAPI.delete(`/feed/comment/${id}`);
   return response.data;
 };
 
 export const updateComment = async (id: number, content: string) => {
-  const response = await commentAPI.patch(`/comment/${id}`, {
+  const response = await commentAPI.patch(`/feed/comment/${id}`, {
     content,
   });
   return response.data;

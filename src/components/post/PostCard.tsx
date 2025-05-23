@@ -7,6 +7,7 @@ import PostComments from "./PostComments";
 import { useAtom } from "jotai";
 import { userAtom } from "@/atoms/auth";
 import { useDeletePost } from "@/hooks/usePost";
+import { useLike } from "@/hooks/useLike";
 interface PostCardProps {
   post: Post;
 }
@@ -22,9 +23,10 @@ export default function PostCard({ post }: PostCardProps) {
 
   const canEdit = user?.email === post.user.email;
 
-  const handleLikeClick = () => {
-    // TODO: 좋아요 API 연동
-    console.log("좋아요 클릭:", post.id);
+  const likeMutation = useLike();
+
+  const handleLike = (postId: number, isCurrentlyLiked: boolean) => {
+    likeMutation.mutate({ id: postId, isLiked: isCurrentlyLiked });
   };
 
   const handleEditStart = () => {
@@ -57,8 +59,9 @@ export default function PostCard({ post }: PostCardProps) {
       <PostActions
         likeCount={post.likeCount}
         isLiked={post.isLiked}
+        postId={post.id}
         commentCount={post.comments.length}
-        onLikeClick={handleLikeClick}
+        onLikeClick={handleLike}
         onCommentClick={() => setOpenComment(!openComment)}
       />
       <PostComments

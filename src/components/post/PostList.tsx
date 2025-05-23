@@ -1,9 +1,19 @@
 "use client";
 import { useGetPost } from "@/hooks/usePost";
 import PostCard from "@/components/post/PostCard";
+import { useMemo } from "react";
 
 export default function MainPage() {
   const { data: posts = [], isLoading } = useGetPost();
+
+  const sortedPosts = useMemo(() => {
+    if (!posts) return [];
+
+    return [...posts].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [posts]);
 
   if (isLoading) {
     return (
@@ -29,7 +39,7 @@ export default function MainPage() {
 
   return (
     <div className="space-y-4">
-      {posts.map((post) => (
+      {sortedPosts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
     </div>

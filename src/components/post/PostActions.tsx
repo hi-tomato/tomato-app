@@ -2,10 +2,11 @@
 import { BiHeart, BiMessage } from "react-icons/bi";
 
 interface PostActionsProps {
+  postId: number;
   likeCount: number;
   isLiked: boolean;
   commentCount: number;
-  onLikeClick: () => void;
+  onLikeClick: (id: number, currentLikeStatus: boolean) => void;
   onCommentClick: () => void;
 }
 
@@ -13,13 +14,14 @@ export default function PostActions({
   likeCount,
   isLiked,
   commentCount,
+  postId,
   onLikeClick,
   onCommentClick,
 }: PostActionsProps) {
   return (
     <div className="flex items-center gap-6 pt-3 border-t border-gray-100">
       <button
-        onClick={onLikeClick}
+        onClick={() => onLikeClick(postId, isLiked)}
         className={`flex items-center gap-2 ${
           isLiked ? "text-red-500" : "text-gray-600"
         } hover:text-red-500 transition-colors`}
