@@ -1,15 +1,14 @@
 "use client";
 import CommentList from "@/components/comment/CommentList";
 import CommentForm from "@/components/comment/CommentForm";
-import { Comment } from "@/types/comment";
+import { Comment } from "@/types/feed";
+import { useCreateComment, useDeleteComment } from "@/hooks/useComment";
 
 interface PostCommentsProps {
   postId: number;
   comments: Comment[];
   isVisible: boolean;
   currentUser: string | undefined;
-  onCommentSubmit: (postId: number, content: string) => void;
-  onCommentDelete: (commentId: number) => void;
 }
 
 export default function PostComments({
@@ -17,22 +16,30 @@ export default function PostComments({
   comments,
   isVisible,
   currentUser,
-  onCommentSubmit,
-  onCommentDelete,
 }: PostCommentsProps) {
-  if (!isVisible) return null;
+  const createCommentMutation = useCreateComment();
+  const deleteCommentMutation = useDeleteComment();
 
+  const handleCommentSubmit = (postId: number, content: string) => {
+    createCommentMutation.mutate({ id: postId, content });
+  };
+
+  const handleCommentDelete = (commentId: number) => {
+    deleteCommentMutation.mutate({ id: commentId });
+  };
+
+  if (!isVisible) return null;
   return (
     <>
       <CommentList
         comments={comments}
         isVisible={true}
-        onDelete={onCommentDelete}
+        onDelete={handleCommentDelete}
       />
       <CommentForm
         postId={postId}
         currentUser={currentUser}
-        onSubmit={onCommentSubmit}
+        onSubmit={handleCommentSubmit}
       />
     </>
   );

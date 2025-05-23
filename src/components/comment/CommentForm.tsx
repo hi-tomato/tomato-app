@@ -17,13 +17,8 @@ export default function CommentForm({
 
   const handlePost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (content.trim().length === 0) return;
-
     onSubmit(postId, content);
     setContent("");
-    setIsFocused(false);
-
-    console.log("댓글 폼에서 댓글을 작성하였습니다.");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
