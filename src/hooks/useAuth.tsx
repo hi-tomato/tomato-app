@@ -63,13 +63,13 @@ export const useSignIn = () => {
 
 export const useGetUser = () => {
   const setUser = useSetAtom(userAtom);
-
-  const query = useQuery({
-    queryKey: ["user"],
+  const userQuery = {
+    queryKey: ["user"] as const,
     queryFn: getUser,
     enabled: !!getAccessToken(),
-    retry: false,
-  });
+    retry: false as const,
+  };
+  const query = useQuery(userQuery);
 
   React.useEffect(() => {
     if (query.data) {

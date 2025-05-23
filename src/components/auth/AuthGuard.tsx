@@ -32,7 +32,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        suppressHydrationWarning
+      >
         <div className="text-center">
           <div className="text-5xl mb-4 animate-spin">🍅</div>
           <p className="text-gray-600">로그인 상태 확인 중...</p>

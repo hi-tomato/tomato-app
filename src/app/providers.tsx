@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 function AuthStateProvider({ children }: { children: React.ReactNode }) {
   const { refetch } = useGetUser();
   useEffect(() => {
-    if (getAccessToken()) {
+    if (typeof window !== "undefined" && getAccessToken()) {
       refetch();
     }
   }, [refetch]);
